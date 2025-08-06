@@ -37,7 +37,11 @@ variable "api_key" {
   description = "(Required) API key for web app to talk to SaaS platform."
 }
 
-
+variable "key_name" {
+  type        = string
+  description = "(Required) Key name to give in ec2 already existing key in aws"
+  default     = "LinuxKP"
+}
 
 #tfe variable
 variable "tfe_organization" {
