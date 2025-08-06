@@ -15,3 +15,5 @@
 *.pem
 .github
 *.tfvars.example
+terraform.lock.hc
+templates/userdata_old.sh
