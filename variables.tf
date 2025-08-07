@@ -44,9 +44,8 @@ variable "key_name" {
 }
 
 variable "vpc_id" {
-  type        = map(string)
-  description = "(Optional) VPC id"
-
+  type        = string
+  description = "(Required) VPC ID of VPC for application deployment."
 }
 
 variable "public_subnets" {
