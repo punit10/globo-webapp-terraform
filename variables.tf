@@ -43,6 +43,21 @@ variable "key_name" {
   default     = "LinuxKP"
 }
 
+variable "vpc_id" {
+  type        = map(string)
+  description = "(Optional) VPC id"
+
+}
+
+variable "public_subnets" {
+  type        = map(string)
+  description = "(Optional) Map of public subnets to create with CIDR blocks. Key will be used as subnet name with prefix. Default: {subnet-1 ="
+  # default = {
+  #   public-1 = "10.42.10.0/24"
+  #   public-2 = "10.42.11.0/24"
+  # }
+}
+
 #tfe variable
 variable "tfe_organization" {
   type        = string
