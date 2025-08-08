@@ -1,10 +1,16 @@
 #!/bin/bash
 
+#!/bin/bash
+set -x
+exec > /home/ec2-user/dockerrun.log 2>&1
+
 # Update system
 sudo yum update -y
 
 # Install Docker and Git
 sudo yum install -y docker git
+
+sleep 5
 
 # Start and enable Docker
 sudo systemctl enable docker
