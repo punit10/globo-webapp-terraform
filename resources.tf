@@ -59,7 +59,7 @@ resource "aws_instance" "main" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /home/ec2-user/userdata.sh",
-      "sh /home/ec2-user/userdata.sh",
+      "sudo sh /home/ec2-user/userdata.sh",
     ]
     on_failure = continue
   }
