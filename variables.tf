@@ -29,7 +29,7 @@ variable "ip_range" {
 variable "instance_type" {
   type        = string
   description = "(Optional) EC2 Instance type to use for web app. Defaults to t3.micro."
-  default     = "t3.micro"
+  default     = "t2.micro"
 }
 
 variable "api_key" {

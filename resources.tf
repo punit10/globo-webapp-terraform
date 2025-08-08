@@ -36,7 +36,8 @@ resource "aws_instance" "main" {
     aws_security_group.webapp_outbound_sg.id,
   ]
 
-  key_name = module.ssh_keys.key_pair_name
+  key_name  = module.ssh_keys.key_pair_name
+  user_data = file("${path.module}/templates/userdata.sh")
 
   tags = merge(local.common_tags, {
     "Name" = "${local.name_prefix}-webapp-${count.index}"
@@ -59,7 +60,7 @@ resource "aws_instance" "main" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /home/ec2-user/userdata.sh",
-      "sudo sh /home/ec2-user/userdata.sh",
+      # "sudo sh /home/ec2-user/userdata.sh",
     ]
     on_failure = continue
   }
