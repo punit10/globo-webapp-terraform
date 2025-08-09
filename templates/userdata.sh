@@ -23,9 +23,10 @@ sudo usermod -aG docker ec2-user
 cd /home/ec2-user
 
 # Clone Django project from GitHub
-git clone https://github.com/punit10/django_student_app.git django-app
-cd django-app
+sudo rm -rf student_app
+git clone https://github.com/punit10/django_student_app.git student_app
+cd student_app
 
 # Build and run Docker container
-docker build -t django-app .
-docker run -d -p 8000:8000 django-app
+docker build -t student_app .
+docker run -d -p 8000:8000 student_app
