@@ -28,5 +28,5 @@ git clone https://github.com/punit10/django_student_app.git student_app
 cd student_app
 
 # Build and run Docker container
-docker build -t django-app .
+docker build -t student_app .
 docker run -d -p 8000:8000 student_app
