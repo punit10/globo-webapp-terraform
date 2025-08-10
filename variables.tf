@@ -57,6 +57,11 @@ variable "key_name" {
 #   # }
 # }
 
+variable "playbook_repository" {
+  type        = string
+  description = "(Required) URI of playbook_repository for now"
+}
+
 #tfe variable
 variable "tfe_organization" {
   type        = string
