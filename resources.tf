@@ -110,8 +110,8 @@ resource "aws_lb" "main" {
 
 resource "aws_lb_listener" "main" {
   load_balancer_arn = aws_lb.main.arn
-  port              = "80"
-  # port     = "8000" 
+  # port              = "80"
+  port     = "8000"
   protocol = "HTTP"
 
   default_action {
@@ -122,8 +122,8 @@ resource "aws_lb_listener" "main" {
 
 resource "aws_lb_target_group" "main" {
   name = "${local.name_prefix}-webapp"
-  port = 80
-  # port        = "8000" #django
+  # port = 80
+  port        = "8000" #django
   target_type = "instance"
   protocol    = "HTTP"
   vpc_id      = data.tfe_outputs.networking.nonsensitive_values.vpc_id
