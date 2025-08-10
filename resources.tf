@@ -36,37 +36,41 @@ resource "aws_instance" "main" {
     aws_security_group.webapp_outbound_sg.id,
   ]
 
-  key_name  = module.ssh_keys.key_pair_name
-  user_data = file("${path.module}/templates/userdata.sh")
+  key_name = module.ssh_keys.key_pair_name
 
   tags = merge(local.common_tags, {
     "Name" = "${local.name_prefix}-webapp-${count.index}"
   })
+  user_data_replace_on_change = true
+  user_data = templatefile("./templates/userdata.sh", {
+    playbook_repository = var.playbook_repository
+  })
 
-  # Provisioner Stuff
-  connection {
-    type        = "ssh"
-    user        = "ec2-user"
-    port        = "22"
-    host        = self.public_ip
-    private_key = module.ssh_keys.private_key_openssh
-  }
+  # # Provisioner Stuff
+  # connection {
+  #   type        = "ssh"
+  #   user        = "ec2-user"
+  #   port        = "22"
+  #   host        = self.public_ip
+  #   private_key = module.ssh_keys.private_key_openssh
+  # }
 
-  provisioner "file" {
-    source      = "./templates/userdata.sh"
-    destination = "/home/ec2-user/userdata.sh"
-  }
+  # provisioner "file" {
+  #   source      = "./templates/userdata.sh"
+  #   destination = "/home/ec2-user/userdata.sh"
+  # }
 
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /home/ec2-user/userdata.sh",
-      # "sudo sh /home/ec2-user/userdata.sh",
-    ]
-    on_failure = continue
-  }
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "chmod +x /home/ec2-user/userdata.sh",
+  #     # "sudo sh /home/ec2-user/userdata.sh",
+  #   ]
+  #   on_failure = continue
+  # }
 
 }
 
+/* 
 resource "null_resource" "webapp" {
 
   triggers = {
@@ -92,7 +96,32 @@ resource "null_resource" "webapp" {
   }
 
 }
+*/
 
+resource "terraform_data" "webapp" {
+  triggers_replace = [
+    length(aws_instance.main.*.id),
+    join(",", aws_instance.main.*.id)
+  ]
+
+  provisioner "file" {
+    content = templatefile("./templates/application.config.tpl", {
+      hosts     = aws_instance.main.*.private_dns
+      site_name = "${local.name_prefix}-taco-wagon"
+      api_key   = var.api_key
+    })
+    destination = "/home/ec2-user/application.config"
+  }
+
+  connection {
+    type        = "ssh"
+    user        = "ec2-user"
+    port        = "22"
+    host        = aws_instance.main[0].public_ip
+    private_key = module.ssh_keys.private_key_openssh
+  }
+
+}
 resource "aws_lb" "main" {
   name               = "${local.name_prefix}-webapp"
   internal           = false
@@ -107,8 +136,8 @@ resource "aws_lb" "main" {
 
 resource "aws_lb_listener" "main" {
   load_balancer_arn = aws_lb.main.arn
-  # port              = "80"
-  port     = "8000"
+  port              = "80"
+  # port     = "8000"
   protocol = "HTTP"
 
   default_action {
@@ -119,8 +148,8 @@ resource "aws_lb_listener" "main" {
 
 resource "aws_lb_target_group" "main" {
   name = "${local.name_prefix}-webapp"
-  # port        = 80
-  port        = "8000"
+  port = 80
+  # port        = "8000" #django
   target_type = "instance"
   protocol    = "HTTP"
   vpc_id      = data.tfe_outputs.networking.nonsensitive_values.vpc_id
