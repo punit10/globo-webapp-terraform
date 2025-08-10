@@ -26,17 +26,18 @@ locals {
 ##################################################################################
 
 resource "aws_instance" "main" {
-  count         = length(var.public_subnets)
+  count         = length(data.tfe_outputs.networking.nonsensitive_values.public_subnets)
   ami           = nonsensitive(data.aws_ssm_parameter.amzn2_linux.value)
   instance_type = var.instance_type
-  subnet_id     = var.public_subnets[count.index]
+  subnet_id     = data.tfe_outputs.networking.nonsensitive_values.public_subnets[count.index]
   vpc_security_group_ids = [
     aws_security_group.webapp_http_inbound_sg.id,
     aws_security_group.webapp_ssh_inbound_sg.id,
     aws_security_group.webapp_outbound_sg.id,
   ]
 
-  key_name = module.ssh_keys.key_pair_name
+  key_name  = module.ssh_keys.key_pair_name
+  user_data = file("${path.module}/templates/userdata.sh")
 
   tags = merge(local.common_tags, {
     "Name" = "${local.name_prefix}-webapp-${count.index}"
@@ -59,7 +60,7 @@ resource "aws_instance" "main" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /home/ec2-user/userdata.sh",
-      "sh /home/ec2-user/userdata.sh",
+      # "sudo sh /home/ec2-user/userdata.sh",
     ]
     on_failure = continue
   }
@@ -97,7 +98,7 @@ resource "aws_lb" "main" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.webapp_http_inbound_sg.id]
-  subnets            = var.public_subnets
+  subnets            = data.tfe_outputs.networking.nonsensitive_values.public_subnets
 
   enable_deletion_protection = false
 
@@ -106,8 +107,9 @@ resource "aws_lb" "main" {
 
 resource "aws_lb_listener" "main" {
   load_balancer_arn = aws_lb.main.arn
-  port              = "80"
-  protocol          = "HTTP"
+  # port              = "80"
+  port     = "8000"
+  protocol = "HTTP"
 
   default_action {
     type             = "forward"
@@ -116,11 +118,12 @@ resource "aws_lb_listener" "main" {
 }
 
 resource "aws_lb_target_group" "main" {
-  name        = "${local.name_prefix}-webapp"
-  port        = 80
+  name = "${local.name_prefix}-webapp"
+  # port        = 80
+  port        = "8000"
   target_type = "instance"
   protocol    = "HTTP"
-  vpc_id      = var.vpc_id
+  vpc_id      = data.tfe_outputs.networking.nonsensitive_values.vpc_id
 }
 
 resource "aws_alb_target_group_attachment" "main" {

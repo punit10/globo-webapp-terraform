@@ -29,7 +29,7 @@ variable "ip_range" {
 variable "instance_type" {
   type        = string
   description = "(Optional) EC2 Instance type to use for web app. Defaults to t3.micro."
-  default     = "t3.micro"
+  default     = "t2.micro"
 }
 
 variable "api_key" {
@@ -37,14 +37,33 @@ variable "api_key" {
   description = "(Required) API key for web app to talk to SaaS platform."
 }
 
-variable "public_subnets" {
-  type        = list(string)
-  description = "(Required) List of subnet IDs for EC2 instance deployments."
-}
-
-variable "vpc_id" {
+variable "key_name" {
   type        = string
-  description = "(Required) VPC ID of VPC for application deployment."
+  description = "(Required) Key name to give in ec2 already existing key in aws"
+  default     = "LinuxKP"
 }
 
+# variable "vpc_id" {
+#   type        = string
+#   description = "(Required) VPC ID of VPC for application deployment."
+# }
 
+# variable "public_subnets" {
+#   type        = map(string)
+#   description = "(Optional) Map of public subnets to create with CIDR blocks. Key will be used as subnet name with prefix. Default: {subnet-1 ="
+#   # default = {
+#   #   public-1 = "10.42.10.0/24"
+#   #   public-2 = "10.42.11.0/24"
+#   # }
+# }
+
+#tfe variable
+variable "tfe_organization" {
+  type        = string
+  description = "(Required) TFE organization"
+}
+
+variable "tfe_workspace_name" {
+  type        = string
+  description = "(Required) TFE workspace name"
+}
