@@ -135,7 +135,7 @@ resource "terraform_data" "webapp" {
 }
 */
 
-/* 
+
 resource "aws_lb" "main" {
   name               = "${local.name_prefix}-webapp"
   internal           = false
@@ -174,5 +174,3 @@ resource "aws_alb_target_group_attachment" "main" {
   target_group_arn = aws_lb_target_group.main.arn
   target_id        = aws_instance.main[count.index].id
 }
-
-*/
