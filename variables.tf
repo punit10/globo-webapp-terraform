@@ -32,9 +32,9 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
-variable "api_key" {
+variable "api_key_secret_id" {
   type        = string
-  description = "(Required) API key for web app to talk to SaaS platform."
+  description = "(Required) Secret Id for API key for web app to talk to SaaS platform."
 }
 
 variable "key_name" {
@@ -71,4 +71,9 @@ variable "tfe_organization" {
 variable "tfe_workspace_name" {
   type        = string
   description = "(Required) TFE workspace name"
+}
+
+variable "ec2_role_name" {
+  type        = string
+  description = "(Required) Role name of aws ec2 instance profile"
 }
